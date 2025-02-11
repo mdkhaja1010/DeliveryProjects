@@ -1,0 +1,92 @@
+Microsoft Windows [Version 10.0.19045.5131]
+(c) Microsoft Corporation. All rights reserved.
+                                                                                                                        D:\cicdRunner>powershell                                                                                                Windows PowerShell                                                                                                      Copyright (C) Microsoft Corporation. All rights reserved.                                                               
+Try the new cross-platform PowerShell https://aka.ms/pscore6
+
+PS D:\cicdRunner> mkdir actions-runner; cd actions-runner
+
+
+    Directory: D:\cicdRunner
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d-----        11/17/2024   5:47 PM                actions-runner
+
+
+PS D:\cicdRunner\actions-runner> Invoke-WebRequest -Uri https://github.com/actions/runner/releases/download/v2.320.0/actions-runner-win-x64-2.320.0.zip -OutFile actions-runner-win-x64-2.320.0.zip
+PS D:\cicdRunner\actions-runner> Add-Type -AssemblyName System.IO.Compression.FileSystem ; [System.IO.Compression.ZipFile]::ExtractToDirectory("$PWD/actions-runner-win-x64-2.320.0.zip", "$PWD")
+PS D:\cicdRunner\actions-runner> ./config.cmd --url https://github.com/mdkhaja1010/GitactionsCICD --token A2TDNHH5DYNBVJZ35V7CGPTHHHWM6
+
+--------------------------------------------------------------------------------
+|        ____ _ _   _   _       _          _        _   _                      |
+|       / ___(_) |_| | | |_   _| |__      / \   ___| |_(_) ___  _ __  ___      |
+|      | |  _| | __| |_| | | | | '_ \    / _ \ / __| __| |/ _ \| '_ \/ __|     |
+|      | |_| | | |_|  _  | |_| | |_) |  / ___ \ (__| |_| | (_) | | | \__ \     |
+|       \____|_|\__|_| |_|\__,_|_.__/  /_/   \_\___|\__|_|\___/|_| |_|___/     |
+|                                                                              |
+|                       Self-hosted runner registration                        |
+|                                                                              |
+--------------------------------------------------------------------------------
+
+# Authentication
+
+
+√ Connected to GitHub
+
+# Runner Registration
+
+Enter the name of the runner group to add this runner to: [press Enter for Default]
+
+Enter the name of runner: [press Enter for KAIROSHW0347] Cicd
+
+This runner will have the following labels: 'self-hosted', 'Windows', 'X64'
+Enter any additional labels (ex. label-1,label-2): [press Enter to skip] cicd1234
+
+√ Runner successfully added
+√ Runner connection is good
+
+# Runner settings
+
+Enter name of work folder: [press Enter for _work]
+
+√ Settings Saved.
+
+Would you like to run the runner as service? (Y/N) [press Enter for N] n
+PS D:\cicdRunner\actions-runner>  ^C
+PS D:\cicdRunner\actions-runner>
+
+
+
+Challenges in the Git actions-runner
+
+
+tags filter not following in the CICd Pipelines causing the maven test life cycle execption
+   mvn clean test -D"dataproviderthreadcount=3 -Dcucumber.filter.tags=@Regression"
+   
+   
+for the first time need configure the settings in the Power shell for remote execution
+
+1 Get-ExecutionPolicy
+
+2 Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+3 Press Y to save the execution policy
+
+
+for creating the runner open c or d drive
+create a one file for execution
+open the cmd folder where the file is created
+and write the Powershell in the command propmpt
+Go to the GitHub actions
+Click on the settings
+Click on the github actions
+click on the runners 
+click on the new self hosted runners
+execute the commands in the powershell
+once it was started it was in idle
+once job is running it was in active
+
+for creating the workflow
+Select the java with maven workflow
+and it generated the yaml file
+use this yaml file and commit changes in the github

@@ -1,0 +1,69 @@
+step--1
+download https://www.enterprisedb.com/downloads/postgres-postgresql-downloads for windows version
+step--2
+https://dbeaver.io/download/ open url and download the windows .zip file
+
+step--3
+install the postgress sql
+select port number-5432
+pasword as 1234
+
+
+integration of grafana influxdb with Jmeter
+-------------------------------------------------------
+go to this url --https://www.influxdata.com/downloads/
+go to older versions and try to download 1.8 version
+copy the wget "path" in the website
+open the powershell as administrator or normal mode
+copy the copied path and hit enter
+and copy the second url in the  
+expand the path 
+
+Go to the influx file 
+and start influx.exe server in power shell or cmd
+few commands for influxdb
+show database: --showing the databases
+then create a database
+create database jmeterdemo
+show users:
+crate user test with password 'admin'
+then show users
+use database jmeterdemo
+
+installing grafana 
+https://grafana.com/grafana/download
+extract the grafana file
+open the bin folder and start the grafana server.exe
+local host http://localhost:3000/login
+the default user name and password is admin and admin
+open the url in the local host and click on the add datasource InfluxDB
+Givne name of the ---jmeterDemotest
+and select query language as influxQL
+and given http url as http://localhost:8086
+Data source as database name
+username as user created
+password as password created
+and select http method as Get
+and click on the save & test button 
+then we see a data source is working. measurements found
+then click on the home
+click the + button
+go to the url https://grafana.com/grafana/dashboards/?category=databases&dataSource=influxdb
+and click on the apache jmeter Dashboard 
+and click on Download Json file
+go to the grafana and click on upload and upload the json file
+and give the name
+and  db name as influxdb
+and click on import
+open jmeter and create script and add backed listner
+and select proper listner
+and url give  as http://localhost:8086/write?db=jmeterdb
+and makes as defalt and see the integration 
+
+
+
+
+
+
+
+

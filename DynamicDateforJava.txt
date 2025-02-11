@@ -1,0 +1,122 @@
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
+public class SelectFutureDateExample {
+
+    public static void main(String[] args) {
+        // Set the path to your chromedriver executable
+        System.setProperty("webdriver.chrome.driver", "path/to/chromedriver");
+
+        // Create a new instance of the ChromeDriver
+        WebDriver driver = new ChromeDriver();
+
+        // Navigate to the webpage with the date picker
+        driver.get("https://example.com"); // Replace with your actual URL
+
+        // Locate the date input element on the page
+        WebElement dateInput = driver.findElement(By.id("dateInput")); // Replace with the actual ID of your date input element
+
+        // Get the current date
+        Date currentDate = new Date();
+
+        // Calculate the future date (e.g., 7 days from the current date)
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(currentDate);
+        calendar.add(Calendar.DAY_OF_MONTH, 7); // Change the number of days as needed
+        Date futureDate = calendar.getTime();
+
+        // Format the future date as required by the date input field
+        DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+        String futureDateString = dateFormat.format(futureDate);
+
+        // Type the future date into the date input field
+        dateInput.sendKeys(futureDateString);
+
+        // Optionally, perform other actions on the page as needed
+
+        // Close the browser
+        driver.quit();
+    }
+}
+
+
+______________________________________________________________________________________________________________________________
+
+WebElement dateInput = driver.findElement(By.id("dateInput")); // Replace with the actual ID of your date input element
+
+// Get the future date as a string
+String futureDateString = "01/15/2024"; // Replace with your desired future date
+
+// Use JavaScript to set the value of the date input field
+((JavascriptExecutor) driver).executeScript("arguments[0].value = arguments[1]", dateInput, futureDateString);
+
+
+
+________________________________________________________________________________________________________________________________
+
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Actions;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
+public class SelectFutureDateExample {
+
+    public static void main(String[] args) {
+        // Set the path to your chromedriver executable
+        System.setProperty("webdriver.chrome.driver", "path/to/chromedriver");
+
+        // Create a new instance of the ChromeDriver
+        WebDriver driver = new ChromeDriver();
+
+        // Navigate to the webpage with the date picker
+        driver.get("https://example.com"); // Replace with your actual URL
+
+        // Locate the date input element on the page
+        WebElement dateInput = driver.findElement(By.id("dateInput")); // Replace with the actual ID of your date input element
+
+        // Get the current date
+        Date currentDate = new Date();
+
+        // Calculate the future date (e.g., 7 days from the current date)
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(currentDate);
+        calendar.add(Calendar.DAY_OF_MONTH, 7); // Change the number of days as needed
+        Date futureDate = calendar.getTime();
+
+        // Format the future date as required by the date input field
+        DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+        String futureDateString = dateFormat.format(futureDate);
+
+        // Click on the date input field to open the date picker
+        dateInput.click();
+
+        // Perform an action using the Actions class to type the future date
+        new Actions(driver)
+                .sendKeys(futureDateString)
+                .perform();
+
+        // Optionally, perform other actions on the page as needed
+
+        // Close the browser
+        driver.quit();
+    }
+}
+
+
+
+

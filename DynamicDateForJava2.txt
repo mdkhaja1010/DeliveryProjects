@@ -1,0 +1,40 @@
+For influxdbTokens
+---http://localhost:8086/api/v2/authorizations
+
+---Dburl---http://localhost:8086/api/v2/write?org=learning&bucket=jmeter
+http://localhost:8086/
+
+----ports list  netstat -aon
+
+Qkyy790qcJkbPYHnkuazTzFj01q4nzRA2xrsJTI3iFdKPmoL6ZzIMYE74GIlEQ1PdyojNQnojTtCjsAo2R4VQw== token of influxdb
+
+
+
+JMeterPluginsCMD.bat --generate-csv D:\JMeterScripts\results3.csv --input-jtl D:\JMeterScripts\logs.jtl --generate-png D:\JMeterScripts\reports123.png --plugin-type ResponseTimesOverTime --width 800 --height 600
+
+
+https://grafana.com/grafana/dashboards/?category=databases&dataSource=influxdb
+learning
+jmeter
+9g8jzOLQBysw5XzfcZ_Onn4sXtGJu1BjSLQ68kPf0y3nwNK7YQPmARRsYadMI2VvJ-Kh8WPsSyRrOPF0THevNQ==
+
+
+
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+// Get the current date
+Calendar calendar = Calendar.getInstance();
+
+// Find the next Monday
+calendar.add(Calendar.DAY_OF_WEEK, (Calendar.MONDAY - calendar.get(Calendar.DAY_OF_WEEK) + 7) % 7);
+String nextMonday = new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime());
+
+// Find the next Friday from the next Monday
+calendar.add(Calendar.DAY_OF_WEEK, 4);  // Adding 4 days to get to Friday
+String nextFriday = new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime());
+
+// Put the results in JMeter variables
+vars.put("nextMonday", nextMonday);
+vars.put("nextFriday", nextFriday);

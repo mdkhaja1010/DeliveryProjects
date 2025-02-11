@@ -1,0 +1,26 @@
+NH122021@hertz.net-balaji
+NH122019@hertz.net-khaja---Superst@rKhaj97
+NH122020@hertz.net-lakshmi
+NH122023@hertz.net--harjeet
+_______________________________________________________________________
+_______________________________________________________________________
+hanvwasjm01.hertz.net 10.233.86.183
+hanvwasjm02.hertz.net 10.233.74.73
+hanvwasjm03.hertz.net 10.233.71.241
+hanvwasjm04.hertz.net 10.233.69.194
+hanvwasjm05.hertz.net 10.233.89.115
+hanvwasjm06.hertz.net 10.233.68.184
+
+
+*import java.io.FileWriter;
+import java.io.IOException;
+
+try {
+    String value = vars.get("c_TransactionID");
+    log.info("Value is = " + value);
+    FileWriter fw = new FileWriter("D:/TransactionID/transactionValueID.csv", true);
+    fw.write("\nTransactionID: " + value);
+    fw.close(); 
+} catch (IOException e) {
+    log.error("Error writing to the file: " + e.getMessage());
+}*/

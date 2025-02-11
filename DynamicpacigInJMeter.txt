@@ -1,0 +1,30 @@
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+
+Long timestamp = System.currentTimeMillis();
+
+String startTime=timestamp.toString();
+log.info("Time Only:************************ " + startTime);
+vars.put("Timestamp_start", startTime);
+
+
+
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+ 
+Long endTime = System.currentTimeMillis();
+
+String startTimeString=vars.get("Timestamp_start");
+Long startTime=Long.parseLong(startTimeString);
+String p=vars.get("pacing");
+Long pacing=Long.parseLong(p);
+pacing =pacing*1000;
+if(pacing>(endTime-startTime)){
+	log.info("threadSleep");
+	Thread.sleep(pacing-(endTime-startTime));
+	
+}
+
+netstat -ano | find "8088"
