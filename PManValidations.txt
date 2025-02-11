@@ -1,0 +1,46 @@
+https://crimson-firefly-901843.postman.co/workspace/VariablesDeclaration~aee9589c-3fc2-462e-ac3c-0fb723f5e545/collection/27297662-86fe3bde-ad54-4b6d-ac7a-d495cdf5398a?action=share&creator=27297662&active-environment=27297662-a8f770cc-7905-412f-bd88-c4b6e8d33a96
+
+
+https://api.postman.com/collections/27297662-86fe3bde-ad54-4b6d-ac7a-d495cdf5398a?access_key=PMAT-01HEQ4QA2K3H1XR2Q6SWHVENRZ
+
+
+//Assertions validation=response
+const jsonBody=pm.response.json();
+const bookid=jsonBody.ID;
+pm.collectionVariables.set("flag",false);
+pm.environment.set("Book_ID",bookid);
+
+function cleanUpScript()
+{
+    const book_id=generateBookId();
+     console.log(book_id);
+    pm.environment.set("Book_ID",book_id);
+    pm.collectionVariables.set("flag",true);
+    postman.setNextRequest(Delete);
+}
+
+pm.test("Validate status code is 200",function()
+{
+    try{
+        pm.response.to.have.status(200);
+        pm.expect(jsonBody).have.property("Msg");
+        pm.expect(jsonBody.Msg).to.equals("successfully added");
+      }
+    catch(err)
+      {
+          if(jsonBody.msg.include("exists"));
+          {
+              cleanUpScript();
+          }
+       }
+});
+
+pm.test("Header cookies response time validations",function()
+{
+pm.response.to.have.header("Content-type");
+pm.expect(pm.response.headers.get("Content-type")).to.eql("application/json;charset=UTF-8");
+pm.expect(pm.response.responseTime).to.be.below(1200);
+pm.expect(pm.response.text()).to.include("successfully added");
+});
+
+
