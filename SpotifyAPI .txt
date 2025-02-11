@@ -1,0 +1,51 @@
+Spotify
+_________________
+username:
+31c7rh4jvw464qdrouklawneni54
+app_clientID
+7a331cfb3f9140daab15a5ce1e5333a1
+clientSecret
+2b577352277f451b9c9d14bd2ba11fb6
+
+
+
+playlist-modify-public playlist-read-private playlist-modify-private
+
+AccessToken---BQAiUN2Gfu6SykCPLBW9z2GnilmE5mrci2rQVJ87HOtFI3vVEfdsTiOx7pA1HGlpA32R6dtxZjhr8IdvOMwJOTNkJ6Wh4tYsIXNSqi2918577rhwVaVwkiMi_aTouwXlTD9nEgn7439mHkPwXLHvfqF9rIi-VUcXkE2eelFCh_-lEDC5MK6632NbnOAIxaZ8p6Btx3fJUnyIN06eGoGgZWmOTSn_ry-Z9YT-UK5pSVpTKhifvmD4qHXRXrUbn8p2TwsNp2jBjN0sWg
+
+BQAiUN2Gfu6SykCPLBW9z2GnilmE5mrci2rQVJ87HOtFI3vVEfdsTiOx7pA1HGlpA32R6dtxZjhr8IdvOMwJOTNkJ6Wh4tYsIXNSqi2918577rhwVaVwkiMi_aTouwXlTD9nEgn7439mHkPwXLHvfqF9rIi-VUcXkE2eelFCh_-lEDC5MK6632NbnOAIxaZ8p6Btx3fJUnyIN06eGoGgZWmOTSn_ry-Z9YT-UK5pSVpTKhifvmD4qHXRXrUbn8p2TwsNp2jBjN0sWg
+
+
+refreshToken---AQCpV65d7yBqUMCb7RnJGn7l-xBzg30oFJXTVGI-axlGwoFfUn8lVO2d2gU099pVWwgKrO8dGEvTpJPFlEkzp71MYFkJMutoc79_qg0kQB4sjuL4SHGxl2oUjmQ0ugaD1XE
+
+
+snapshot_id": "NSwzYzk3ZWJhM2ZmZDU2NjczZDM4MDNiYzRhZWYxOTNiMDkxNjJjZWVj
+
+
+---------------------------
+OAuth 2.0 paypal account-----------------using RestAssured
+launch the paypal develper account
+and signup the account
+
+
+clientId
+AcC5BRguPyefsJEZaDopU8PP2ga5X1z3sluZ9XUyrGnY-dle0yHjVozd7ElbNPLH1D_y9GuZIYps_ceg
+clientSecret
+EEz3H4tBtmKkxkJsiXS_cqmLdfmTuQ7ORJb1Qj-xhFbWuS1ME9ojFHYXBT3Sekc-uQYCxp7aNgJT3VPT
+
+
+https://api-m.sandbox.paypal.com/v1/oauth2/token
+
+{
+    "scope": "https://uri.paypal.com/services/payments/futurepayments https://uri.paypal.com/services/invoicing https://uri.paypal.com/services/vault/payment-tokens/read https://uri.paypal.com/services/disputes/read-buyer https://uri.paypal.com/services/payments/realtimepayment https://uri.paypal.com/services/disputes/update-seller https://uri.paypal.com/services/payments/payment/authcapture openid https://uri.paypal.com/services/disputes/read-seller Braintree:Vault https://uri.paypal.com/services/payments/refund https://api.paypal.com/v1/vault/credit-card https://api.paypal.com/v1/payments/.* https://uri.paypal.com/payments/payouts https://uri.paypal.com/services/vault/payment-tokens/readwrite https://api.paypal.com/v1/vault/credit-card/.* https://uri.paypal.com/services/subscriptions https://uri.paypal.com/services/applications/webhooks",
+    "access_token": "A21AAK7YmFsnf0d3pg2Le4s2DO2YpmtFj34OV9SV7Lp67imjo_xf-Qv6vXD2NQ7qrE1Uh9yB8-JflxEBjU_vsegiLp3LCYpRQ",
+    "token_type": "Bearer",
+    "app_id": "APP-80W284485P519543T",
+    "expires_in": 32400,
+    "nonce": "2024-08-04T01:32:16ZOmMM358IyiGfjc8rglluJb2JqDIYqRenDtXx_9u_c50"
+}
+
+
+get Api 
+
+https://api-m.sandbox.paypal.com/v1/invoicing/invoices?page=3&page_size=4&total_count_required=true

@@ -1,0 +1,516 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.6.3">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="RatesCalculator_12Dec_MultiFiles">
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="duration" elementType="Argument">
+            <stringProp name="Argument.name">duration</stringProp>
+            <stringProp name="Argument.value">600</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="setupDone" elementType="Argument">
+            <stringProp name="Argument.name">setupDone</stringProp>
+            <stringProp name="Argument.value">false</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="stopDone" elementType="Argument">
+            <stringProp name="Argument.name">stopDone</stringProp>
+            <stringProp name="Argument.value">false</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="nrThreads" elementType="Argument">
+            <stringProp name="Argument.name">nrThreads</stringProp>
+            <stringProp name="Argument.value">2</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="sampleAtSecond" elementType="Argument">
+            <stringProp name="Argument.name">sampleAtSecond</stringProp>
+            <stringProp name="Argument.value">50</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+      </elementProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
+    </TestPlan>
+    <hashTree>
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="Destination" elementType="Argument">
+            <stringProp name="Argument.name">Destination</stringProp>
+            <stringProp name="Argument.value">DPRAT05IQRAT</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="ReplyQueue" elementType="Argument">
+            <stringProp name="Argument.name">ReplyQueue</stringProp>
+            <stringProp name="Argument.value">DPRAT05OQRAT</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+      </Arguments>
+      <hashTree/>
+      <SetupThreadGroup guiclass="SetupThreadGroupGui" testclass="SetupThreadGroup" testname="DPRAT05CCPPG12">
+        <intProp name="ThreadGroup.num_threads">6</intProp>
+        <intProp name="ThreadGroup.ramp_time">1</intProp>
+        <longProp name="ThreadGroup.duration">3600</longProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.on_sample_error">stoptestnow</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
+          <intProp name="LoopController.loops">-1</intProp>
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+        </elementProp>
+      </SetupThreadGroup>
+      <hashTree>
+        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler - CH01" enabled="true">
+          <stringProp name="scriptLanguage">groovy</stringProp>
+          <stringProp name="parameters"></stringProp>
+          <stringProp name="filename"></stringProp>
+          <stringProp name="cacheKey">true</stringProp>
+          <stringProp name="script">import org.apache.commons.lang3.StringUtils;
+import com.ibm.mq.jms.*;
+import com.ibm.mq.*;
+import javax.jms.*;
+import java.nio.file.*;
+import java.time.Instant;
+import java.util.UUID;
+import java.util.concurrent.*;
+
+// Ensure MQ client libraries are available
+log.info(&quot;Starting enhanced IBM MQ message producer script&quot;);
+
+// Thread pool for concurrent file reading
+ExecutorService fileReadingPool = Executors.newFixedThreadPool(10); // Adjust thread count based on system capacity
+
+// BlockingQueue to store file content for processing
+BlockingQueue&lt;FileData&gt; fileQueue = new LinkedBlockingQueue&lt;&gt;();
+
+// Helper class for encapsulating file data
+class FileData {
+    private final String fileName;
+    private final byte[] content;
+
+    public FileData(String fileName, byte[] content) {
+        this.fileName = fileName;
+        this.content = content;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public byte[] getContent() {
+        return content;
+    }
+}
+
+// Initialize MQ connection and session
+MQQueueConnectionFactory factory = new MQQueueConnectionFactory();
+Connection connection = null;
+Session session = null;
+MessageProducer producer = null;
+MessageConsumer consumer = null;
+
+try {
+    // Set up the MQ connection factory (Replace with actual values)
+    factory.setHostName(&quot;hanvlasdper01.hertz.net&quot;);
+    factory.setPort(2026); // Replace with your MQ port (default is 1414)
+    factory.setChannel(&quot;DPRAT05CCPPG12&quot;);
+    factory.setQueueManager(&quot;AWSDCMQPRAT05&quot;); // Replace with your queue manager name
+    factory.setTransportType(com.ibm.mq.jms.JMSC.MQJMS_TP_CLIENT_MQ_TCPIP); // Client mode (TCP/IP)
+
+    // Establish the connection and session
+    log.info(&quot;Creating Connection&quot;);
+    connection = factory.createConnection();
+    log.info(&quot;Connection Created&quot;);
+
+    log.info(&quot;Creating Session&quot;);
+    session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+    log.info(&quot;Session Created&quot;);
+
+    // Start the connection
+    connection.start();
+
+    // Retrieve the destination and reply-to queue names from JMeter variables
+    String destinationQueueName = vars.get(&quot;Destination&quot;);
+    String replyQueueName = vars.get(&quot;ReplyQueue&quot;);
+
+    if (destinationQueueName == null || destinationQueueName.isEmpty()) {
+        throw new IllegalStateException(&quot;Destination queue name is not set&quot;);
+    }
+    if (replyQueueName == null || replyQueueName.isEmpty()) {
+        throw new IllegalStateException(&quot;Reply queue name is not set&quot;);
+    }
+
+    // Create the destination queue and reply queue objects
+    Queue destination = session.createQueue(destinationQueueName);
+    Queue replyQueue = session.createQueue(replyQueueName);
+
+    log.info(&quot;Destination Queue: &quot; + destinationQueueName);
+    log.info(&quot;Reply Queue: &quot; + replyQueueName);
+
+    // Creating ReplyToQueue in specific format
+    String queueManagerToReplyTo = &quot;AWSDCMQPRAT05&quot;;
+    String replyToQueueUrl = &quot;queue://&quot; + queueManagerToReplyTo + &quot;/&quot; + replyQueueName + &quot;?targetClient=1&quot;;
+    MQQueue replyToQueueParm = new MQQueue(replyToQueueUrl);
+
+    // Create a message producer for the destination queue
+    producer = session.createProducer(destination);
+
+    // Create a consumer for the reply queue
+    consumer = session.createConsumer(replyQueue);
+
+    // Directory containing files
+    Path directoryPath = Paths.get(&quot;D://0825TestData//F01_1000//&quot;);//D:\0825TestData\F01_1000/
+    if (!Files.isDirectory(directoryPath)) {
+        throw new IllegalStateException(&quot;Invalid directory: &quot; + directoryPath);
+    }
+
+    // Submit file reading tasks
+    Files.list(directoryPath)
+        .filter(path -&gt; path.toString().toLowerCase().endsWith(&quot;.xml&quot;))
+        .forEach(file -&gt; fileReadingPool.submit(() -&gt; {
+            try {
+                log.info(&quot;Reading file: &quot; + file.getFileName());
+                byte[] fileContent = Files.readAllBytes(file);
+                fileQueue.put(new FileData(file.getFileName().toString(), fileContent));
+                log.info(&quot;File read and queued: &quot; + file.getFileName());
+            } catch (IOException | InterruptedException e) {
+                log.error(&quot;Error reading file: &quot; + file.getFileName(), e);
+            }
+        }));
+
+    // Shutdown file reading pool after enqueuing all tasks
+    fileReadingPool.shutdown();
+    fileReadingPool.awaitTermination(1, TimeUnit.MINUTES);
+
+    // Process files from the queue
+    while (!fileQueue.isEmpty()) {
+        FileData fileData = fileQueue.poll(1, TimeUnit.SECONDS);
+        if (fileData == null) break;
+
+        log.info(&quot;Processing file: &quot; + fileData.getFileName());
+
+        // Generate message IDs
+        String id = UUID.randomUUID().toString().substring(0, 24); // Simplified unique ID generation
+        byte[] messageID = StringUtils.rightPad(id, 24).getBytes();
+        byte[] correlationID = messageID;
+
+        // Create and configure the message
+        BytesMessage message = session.createBytesMessage();
+        message.writeBytes(fileData.getContent());
+        message.setJMSMessageID(new String(messageID));
+        message.setJMSCorrelationIDAsBytes(correlationID);
+        message.setJMSReplyTo(replyToQueueParm);
+
+        // Measure transaction time
+        Instant start = Instant.now();
+
+        // Send the message
+        producer.send(message);
+        log.info(&quot;Message sent for file: &quot; + fileData.getFileName());
+
+        // Receive the reply
+//        Message response = consumer.receive(500); // 0.5-second timeout
+//        if (response instanceof TextMessage) {
+//            TextMessage replyMessage = (TextMessage) response;
+//            log.info(&quot;Reply received for file: &quot; + fileData.getFileName() + &quot; - Reply: &quot; + replyMessage.getText());
+
+//            long transactionTime = Instant.now().toEpochMilli() - start.toEpochMilli();
+//            log.info(&quot;Transaction time: &quot; + transactionTime + &quot; ms for file: &quot; + fileData.getFileName());
+//        } else {
+ //           log.warn(&quot;No reply received for file: &quot; + fileData.getFileName());
+//        }
+    }
+}
+catch (Exception e) {
+    log.error(&quot;Error during processing: &quot; + e.getMessage(), e);
+} finally {
+    fileReadingPool.shutdownNow();
+
+    // Cleanup MQ resources
+    try {
+        if (producer != null) producer.close();
+        if (consumer != null) consumer.close();
+        if (session != null) session.close();
+        if (connection != null) connection.close();
+        log.info(&quot;MQ resources closed successfully&quot;);
+    } catch (Exception e) {
+        log.error(&quot;Error closing MQ resources: &quot; + e.getMessage(), e);
+    }
+}
+</stringProp>
+        </JSR223Sampler>
+        <hashTree/>
+      </hashTree>
+      <SetupThreadGroup guiclass="SetupThreadGroupGui" testclass="SetupThreadGroup" testname="DPRAT05CCRTE">
+        <intProp name="ThreadGroup.num_threads">6</intProp>
+        <intProp name="ThreadGroup.ramp_time">1</intProp>
+        <longProp name="ThreadGroup.duration">3600</longProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.on_sample_error">stoptestnow</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
+          <intProp name="LoopController.loops">-1</intProp>
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+        </elementProp>
+      </SetupThreadGroup>
+      <hashTree>
+        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler - CH02" enabled="true">
+          <stringProp name="scriptLanguage">groovy</stringProp>
+          <stringProp name="parameters"></stringProp>
+          <stringProp name="filename"></stringProp>
+          <stringProp name="cacheKey">true</stringProp>
+          <stringProp name="script">import org.apache.commons.lang3.StringUtils;
+import com.ibm.mq.jms.*;
+import com.ibm.mq.*;
+import javax.jms.*;
+import java.nio.file.*;
+import java.time.Instant;
+import java.util.UUID;
+import java.util.concurrent.*;
+
+// Ensure MQ client libraries are available
+log.info(&quot;Starting enhanced IBM MQ message producer script&quot;);
+
+// Thread pool for concurrent file reading
+ExecutorService fileReadingPool = Executors.newFixedThreadPool(10); // Adjust thread count based on system capacity
+
+// BlockingQueue to store file content for processing
+BlockingQueue&lt;FileData&gt; fileQueue = new LinkedBlockingQueue&lt;&gt;();
+
+// Helper class for encapsulating file data
+class FileData {
+    private final String fileName;
+    private final byte[] content;
+
+    public FileData(String fileName, byte[] content) {
+        this.fileName = fileName;
+        this.content = content;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public byte[] getContent() {
+        return content;
+    }
+}
+
+// Initialize MQ connection and session
+MQQueueConnectionFactory factory = new MQQueueConnectionFactory();
+Connection connection = null;
+Session session = null;
+MessageProducer producer = null;
+MessageConsumer consumer = null;
+
+try {
+    // Set up the MQ connection factory (Replace with actual values)
+    factory.setHostName(&quot;hanvlasdper01.hertz.net&quot;);
+    factory.setPort(2026); // Replace with your MQ port (default is 1414)
+    factory.setChannel(&quot;DPRAT05CCRTE&quot;);
+    factory.setQueueManager(&quot;AWSDCMQPRAT05&quot;); // Replace with your queue manager name
+    factory.setTransportType(com.ibm.mq.jms.JMSC.MQJMS_TP_CLIENT_MQ_TCPIP); // Client mode (TCP/IP)
+
+    // Establish the connection and session
+    log.info(&quot;Creating Connection&quot;);
+    connection = factory.createConnection();
+    log.info(&quot;Connection Created&quot;);
+
+    log.info(&quot;Creating Session&quot;);
+    session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+    log.info(&quot;Session Created&quot;);
+
+    // Start the connection
+    connection.start();
+
+    // Retrieve the destination and reply-to queue names from JMeter variables
+    String destinationQueueName = vars.get(&quot;Destination&quot;);
+    String replyQueueName = vars.get(&quot;ReplyQueue&quot;);
+
+    if (destinationQueueName == null || destinationQueueName.isEmpty()) {
+        throw new IllegalStateException(&quot;Destination queue name is not set&quot;);
+    }
+    if (replyQueueName == null || replyQueueName.isEmpty()) {
+        throw new IllegalStateException(&quot;Reply queue name is not set&quot;);
+    }
+
+    // Create the destination queue and reply queue objects
+    Queue destination = session.createQueue(destinationQueueName);
+    Queue replyQueue = session.createQueue(replyQueueName);
+
+    log.info(&quot;Destination Queue: &quot; + destinationQueueName);
+    log.info(&quot;Reply Queue: &quot; + replyQueueName);
+
+    // Creating ReplyToQueue in specific format
+    String queueManagerToReplyTo = &quot;AWSDCMQPRAT05&quot;;
+    String replyToQueueUrl = &quot;queue://&quot; + queueManagerToReplyTo + &quot;/&quot; + replyQueueName + &quot;?targetClient=1&quot;;
+    MQQueue replyToQueueParm = new MQQueue(replyToQueueUrl);
+
+    // Create a message producer for the destination queue
+    producer = session.createProducer(destination);
+
+    // Create a consumer for the reply queue
+    consumer = session.createConsumer(replyQueue);
+
+    // Directory containing files
+    Path directoryPath = Paths.get(&quot;D://0825TestData//F02_1000//&quot;);
+    if (!Files.isDirectory(directoryPath)) {
+        throw new IllegalStateException(&quot;Invalid directory: &quot; + directoryPath);
+    }
+
+    // Submit file reading tasks
+    Files.list(directoryPath)
+        .filter(path -&gt; path.toString().toLowerCase().endsWith(&quot;.xml&quot;))
+        .forEach(file -&gt; fileReadingPool.submit(() -&gt; {
+            try {
+                log.info(&quot;Reading file: &quot; + file.getFileName());
+                byte[] fileContent = Files.readAllBytes(file);
+                fileQueue.put(new FileData(file.getFileName().toString(), fileContent));
+                log.info(&quot;File read and queued: &quot; + file.getFileName());
+            } catch (IOException | InterruptedException e) {
+                log.error(&quot;Error reading file: &quot; + file.getFileName(), e);
+            }
+        }));
+
+    // Shutdown file reading pool after enqueuing all tasks
+    fileReadingPool.shutdown();
+    fileReadingPool.awaitTermination(1, TimeUnit.MINUTES);
+
+    // Process files from the queue
+    while (!fileQueue.isEmpty()) {
+        FileData fileData = fileQueue.poll(1, TimeUnit.SECONDS);
+        if (fileData == null) break;
+
+        log.info(&quot;Processing file: &quot; + fileData.getFileName());
+
+        // Generate message IDs
+        String id = UUID.randomUUID().toString().substring(0, 24); // Simplified unique ID generation
+        byte[] messageID = StringUtils.rightPad(id, 24).getBytes();
+        byte[] correlationID = messageID;
+
+        // Create and configure the message
+        BytesMessage message = session.createBytesMessage();
+        message.writeBytes(fileData.getContent());
+        message.setJMSMessageID(new String(messageID));
+        message.setJMSCorrelationIDAsBytes(correlationID);
+        message.setJMSReplyTo(replyToQueueParm);
+
+        // Measure transaction time
+        Instant start = Instant.now();
+
+        // Send the message
+        producer.send(message);
+        log.info(&quot;Message sent for file: &quot; + fileData.getFileName());
+
+        // Receive the reply
+ //       Message response = consumer.receive(500); // 0.5-second timeout
+ //       if (response instanceof TextMessage) {
+ //           TextMessage replyMessage = (TextMessage) response;
+ //           log.info(&quot;Reply received for file: &quot; + fileData.getFileName() + &quot; - Reply: &quot; + replyMessage.getText());
+
+//            long transactionTime = Instant.now().toEpochMilli() - start.toEpochMilli();
+ //           log.info(&quot;Transaction time: &quot; + transactionTime + &quot; ms for file: &quot; + fileData.getFileName());
+ //       } else {
+ //           log.warn(&quot;No reply received for file: &quot; + fileData.getFileName());
+  //      }
+    }
+} catch (Exception e) {
+    log.error(&quot;Error during processing: &quot; + e.getMessage(), e);
+} finally {
+    fileReadingPool.shutdownNow();
+
+    // Cleanup MQ resources
+    try {
+        if (producer != null) producer.close();
+        if (consumer != null) consumer.close();
+        if (session != null) session.close();
+        if (connection != null) connection.close();
+        log.info(&quot;MQ resources closed successfully&quot;);
+    } catch (Exception e) {
+        log.error(&quot;Error closing MQ resources: &quot; + e.getMessage(), e);
+    }
+}
+</stringProp>
+        </JSR223Sampler>
+        <hashTree/>
+      </hashTree>
+      <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report" enabled="false">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>true</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <sentBytes>true</sentBytes>
+            <url>true</url>
+            <threadCounts>true</threadCounts>
+            <idleTime>true</idleTime>
+            <connectTime>true</connectTime>
+          </value>
+        </objProp>
+        <stringProp name="filename"></stringProp>
+      </ResultCollector>
+      <hashTree/>
+      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="false">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>true</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <sentBytes>true</sentBytes>
+            <url>true</url>
+            <threadCounts>true</threadCounts>
+            <idleTime>true</idleTime>
+            <connectTime>true</connectTime>
+          </value>
+        </objProp>
+        <stringProp name="filename"></stringProp>
+      </ResultCollector>
+      <hashTree/>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>
